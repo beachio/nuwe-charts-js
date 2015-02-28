@@ -1,4 +1,5 @@
 $(document).ready(function() {
+	var width = 420, height = 420;
 	// Call Library function
 	var option = {
 		width: width,
