@@ -195,7 +195,7 @@ $(document).ready(function() {
 			'stroke-width': 0,
 			arc: [width / 2, height / 2, 1000, 1000, width / 2, 1, 0]
 		}, 600, 'ease', function() {
-			opacityRing.attr({'arc': [$scope.width / 2, $scope.height / 2, 1000, 1000, 0, 1, 0]});
+			opacityRing.attr({'arc': [width / 2, height / 2, 1000, 1000, 0, 1, 0]});
 			n++;
 			if (n > 4) {
 				innerCircle.animate(innerCircleAnim[0]).animate(innerCircleAnim[1].delay(900));
