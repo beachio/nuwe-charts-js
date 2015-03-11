@@ -120,6 +120,8 @@ $(document).ready(function() {
 				anim[0][i] = Raphael.animation({
 					arc: [width / 2, height / 2, 0 , 1000, innerRadius + radiusStep * i, (i % 2 *2 - 1), 0]
 				}, 900, function () {
+					// Sync Animations between.
+
 					// Breakpoint to cancel the animation if the value loaded from server.
 					theArc[0].animateWith(theArc[1], anim[1][1], anim[1][0].delay(300));
 					theArc[1].animateWith(theArc[2], anim[1][2], anim[1][1].delay(300));

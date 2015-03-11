@@ -1,4 +1,3 @@
-
 (function (glob) {
     var version = "0.0.1",
         loaded = false,
@@ -61,7 +60,7 @@
 
         backCircleStrokeColor: '#eeeeee',
 
-    // Data Value
+        // Data Value
         amount: [],
         textPS: [
             {
@@ -74,6 +73,11 @@
             }
         ],
         colorTable: ['#009D76', '#ff8300', '#cd3df6'],
+
+        // Element and Animation Options
+        ringCount: 3,
+        syncAnimationDelay:  400,
+
     }
         /* Private variables */
     nuwe_charts.svgElements = {
@@ -86,6 +90,7 @@
     };
 
     
+    // Init function
     nuwe_charts.init = function() {
         nuwe_charts._paper = Raphael(nuwe_charts.containerID, nuwe_charts.option.width, nuwe_charts.option.height);
 
@@ -140,56 +145,158 @@
         }
     };
 
+    nuwe_charts.animation = {
+
+        /*
+        ** Take Care of Raphael Animation Creation
+        ** Every animation is going to take different params, 
+        ** which will be specified in that particular function.
+        ** 
+        ** Here are common params
+        **   animationName: Animation Type
+        **      'clockwise':      The arc is supposed to be changed in clockwise way
+        **      'counterwise':    The arc is supposed to be changed in counterwise way
+        **      'fixed':          The arc is supposed to transition to certian radius
+        **   radius:        Raphael Arc radius
+        **   duration:      Raphael Chart duration
+        **   direction:     Fill or empty ( 1: fill, empty: -1 )
+        **   
+        */
+        createAnimation: function(animationName, params, callback) {
+            return this.animations[animationName].apply(null, [params, callback]);
+        },
+
+        /*
+        ** Take Care of Raphael Animation Chaining
+        ** It is used on callback function to define what behavior we expect.
+        ** 
+        ** Here are common params
+        **   idx:           Next Animation index
+        **   type:          Chaining type
+        **       'sync':    All elements in next animation should be working at the same time.
+        **       'after':   
+        */
+        nextAnimation: function(idx, type) {
+            if (type == 'sync') {
+                // loop through all elements and make sync animation.
+                var ringCount = nuwe_charts.option.ringCount;
+                for (i = 0; i < nuwe_charts.option.ringCount; i ++) {
+                    nuwe_charts.svgElements._theArc[i].animateWith(nuwe_charts.svgElements._theArc[(i + 1) % ringCount], nuwe_charts.svgElements._anim[idx][(i + 1) % ringCount], nuwe_charts.svgElements._anim[idx][i].delay(nuwe_charts.option.syncAnimationDelay));
+                }
+                
+            }
+
+            if (type == 'after') {
+                // This animation is indicating animations occuring one after another.
+                // Like Shrink and enlarge animation
+
+                // We will think how we are going to handle this.
+            }
+
+        },
+
+
+        animations: {
+            clockwise: function(params, callback) {
+                console.log(params);
+                return Raphael.animation({
+                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 0 , 1000, 
+                    params.radius, params.direction, 0]
+                }, params.duration, callback);
+            },
+            counterwise: function(params, callback) {
+                return Raphael.animation({
+                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000 , 1000, 
+                    params.radius, params.direction, 0]
+                }, params.duration, callback);
+            },
+            fixed: function(params, callback) {
+                return Raphael.animation({
+                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000 , 1000, 
+                    params.radius, 1, 0]
+                }, params.duration, params.easing, callback);
+            }
+        }
+
+
+    };
+
+
     nuwe_charts.loadingDial = function() {
         // For now we will fix it with 1000
         var amount = 1000;
-
+        var option = nuwe_charts.option;
+        
         // We are going to have 6 animations, and prepare Raphael animation array.
         for (i = 0; i < 6; i++) {
             nuwe_charts.svgElements._anim[i]  = [];
         }
         
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < option.ringCount; i++) {
             
             if (i !== 0) {
-                // Clockwise animation
-                nuwe_charts.svgElements._anim[0][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 0 , 1000, 
-                    nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, (i % 2 *2 - 1), 0]
-                }, 900);
+                nuwe_charts.svgElements._anim[0][i] = nuwe_charts.animation.createAnimation(
+                    "clockwise",
+                    {
+                        radius: option.innerRadius + option.radiusStep * i,
+                        duration: 900,
+                        direction: (i % 2 *2 - 1)
+                    }, 
+                null);
+                // Counter-clockwise animation
+                nuwe_charts.svgElements._anim[1][i] = nuwe_charts.animation.createAnimation(
+                    "counterwise" , 
+                    {
+                        radius: option.innerRadius + option.radiusStep * i,
+                        duration: 900,
+                        direction: (i % 2 *2 - 1)
+                    }, 
+                null);
 
                 // Counter-clockwise animation
-                nuwe_charts.svgElements._anim[1][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, 
-                    nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, (i % 2 *2 - 1), 0]
-                }, 900);
-                // Enlarge Animation
-                nuwe_charts.svgElements._anim[2][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000 , 1000, 
-                    nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * (i + 1), (i % 2 *2 - 1), 0]
-                }, 400, 'backOut');
+                nuwe_charts.svgElements._anim[2][i] = nuwe_charts.animation.createAnimation(
+                    "fixed",
+                    {
+                        radius: option.innerRadius + option.radiusStep * (i + 1),
+                        duration: 400,
+                        easing: 'backOut'
+                    }, function() {
+                        console.log("From Provided Callback!");
+                    });
 
             } else {
                 // Clockwise animation
-                nuwe_charts.svgElements._anim[0][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 0 , 1000, 
-                    nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, (i % 2 *2 - 1), 0]
-                }, 900, function () {
-                    // Breakpoint to cancel the animation if the value loaded from server.
-                    nuwe_charts.svgElements._theArc[0].animateWith(nuwe_charts.svgElements._theArc[1], nuwe_charts.svgElements._anim[1][1], nuwe_charts.svgElements._anim[1][0].delay(300));
-                    nuwe_charts.svgElements._theArc[1].animateWith(nuwe_charts.svgElements._theArc[2], nuwe_charts.svgElements._anim[1][2], nuwe_charts.svgElements._anim[1][1].delay(300));
-                    nuwe_charts.svgElements._theArc[2].animateWith(nuwe_charts.svgElements._theArc[0], nuwe_charts.svgElements._anim[1][0], nuwe_charts.svgElements._anim[1][2].delay(300));
-                });
-                // Counter-clockwise animation
-                nuwe_charts.svgElements._anim[1][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, (i % 2 *2 - 1), 0]
-                }, 900, function() {
-                    // Another breakpoint to cancel the animation if the value loaded from server.
-                    nuwe_charts.svgElements._theArc[0].animate(nuwe_charts.svgElements._anim[2][0]).animate(nuwe_charts.svgElements._anim[3][0].delay(400));
-                    nuwe_charts.svgElements._theArc[1].animate(nuwe_charts.svgElements._anim[2][1].delay(200)).animate(nuwe_charts.svgElements._anim[3][1].delay(600));
-                    nuwe_charts.svgElements._theArc[2].animate(nuwe_charts.svgElements._anim[2][2].delay(400)).animate(nuwe_charts.svgElements._anim[3][2].delay(800));
-                });
+                nuwe_charts.svgElements._anim[0][i] = nuwe_charts.animation.createAnimation(
+                    "clockwise",
+                    {
+                        radius: option.innerRadius + option.radiusStep * i,
+                        duration: 900,
+                        direction: (i % 2 *2 - 1)
+                    }, function () {
 
+                        // Sync animations
+                        nuwe_charts.animation.nextAnimation(1, 'sync');
+                    }
+                );
+
+                // Counter-Clockwise animation
+                nuwe_charts.svgElements._anim[1][i] = nuwe_charts.animation.createAnimation(
+                    "counterwise",
+                    {
+                        radius: option.innerRadius + option.radiusStep * i,
+                        duration: 900,
+                        direction: (i % 2 *2 - 1)
+                    }, function () {
+
+                        // Sync animations
+                        nuwe_charts.animation.nextAnimation(2, 'after');
+
+                        nuwe_charts.svgElements._theArc[0].animate(nuwe_charts.svgElements._anim[2][0]).animate(nuwe_charts.svgElements._anim[3][0].delay(400));
+                        nuwe_charts.svgElements._theArc[1].animate(nuwe_charts.svgElements._anim[2][1].delay(200)).animate(nuwe_charts.svgElements._anim[3][1].delay(600));
+                        nuwe_charts.svgElements._theArc[2].animate(nuwe_charts.svgElements._anim[2][2].delay(400)).animate(nuwe_charts.svgElements._anim[3][2].delay(800));
+                    }
+                );
+                
                 // Enlarge animation
                 nuwe_charts.svgElements._anim[2][i] = Raphael.animation({
                     arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * (i + 1), 1, 0]
@@ -269,10 +376,7 @@
             arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, 0, (i % 2 *2 - 1), 0]
         });
 
-        
-        nuwe_charts.svgElements._theArc[0].animateWith(nuwe_charts.svgElements._theArc[1], nuwe_charts.svgElements._anim[0][1], nuwe_charts.svgElements._anim[0][0]);
-        nuwe_charts.svgElements._theArc[1].animateWith(nuwe_charts.svgElements._theArc[2], nuwe_charts.svgElements._anim[0][2], nuwe_charts.svgElements._anim[0][1]);
-        nuwe_charts.svgElements._theArc[2].animateWith(nuwe_charts.svgElements._theArc[0], nuwe_charts.svgElements._anim[0][0], nuwe_charts.svgElements._anim[0][2]);
+        nuwe_charts.animation.nextAnimation(0, 'sync');
     }
 
     nuwe_charts.prototype.getPaper = function() {
