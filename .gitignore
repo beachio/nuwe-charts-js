@@ -13,4 +13,5 @@ pids
 node_modules
 
 # bower files
+/lib
 public/lib

@@ -47,7 +47,7 @@
     nuwe_charts.option = {
         width: 420,
         height: 420,
-        innerRadius: 112,
+        innerRadius: 81,
         radiusStep: 31,
         strokeWidth: 29,
         imageWidth: 33,
