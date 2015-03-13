@@ -176,7 +176,8 @@
         **       'sync':    All elements in next animation should be working at the same time.
         **       'after':   
         */
-        nextAnimation: function(idx, type) {
+        nextAnimation: function(idx, type, initialDelay) {
+            initialDelay = (typeof initialDelay === 'undefined') ? 0 : initialDelay;
             if (type == 'sync') {
                 // loop through all elements and make sync animation.
                 var ringCount = nuwe_charts.option.ringCount;
@@ -189,8 +190,9 @@
             if (type == 'after') {
                 // This animation is indicating animations occuring one after another.
                 // Like Shrink and enlarge animation
-
-                // We will think how we are going to handle this.
+                for (i = 0; i < nuwe_charts.option.ringCount; i ++) {
+                    nuwe_charts.svgElements._theArc[i].animate(nuwe_charts.svgElements._anim[idx][0][i].delay(initialDelay + i * 200)).animate(nuwe_charts.svgElements._anim[idx][1][i].delay( initialDelay + i * 200 + 400));
+                }
             }
 
         },
@@ -210,7 +212,7 @@
                     params.radius, params.direction, 0]
                 }, params.duration, callback);
             },
-            fixed: function(params, callback) {
+            radius: function(params, callback) {
                 return Raphael.animation({
                     arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000 , 1000, 
                     params.radius, 1, 0]
@@ -232,6 +234,12 @@
             nuwe_charts.svgElements._anim[i]  = [];
         }
         
+        // for enlarge animation or shrink, we need special data structure.
+        nuwe_charts.svgElements._anim[2][0] = [];
+        nuwe_charts.svgElements._anim[2][1] = [];
+        nuwe_charts.svgElements._anim[3][0] = [];
+        nuwe_charts.svgElements._anim[3][1] = [];
+
         for (i = 0; i < option.ringCount; i++) {
             
             if (i !== 0) {
@@ -252,17 +260,6 @@
                         direction: (i % 2 *2 - 1)
                     }, 
                 null);
-
-                // Counter-clockwise animation
-                nuwe_charts.svgElements._anim[2][i] = nuwe_charts.animation.createAnimation(
-                    "fixed",
-                    {
-                        radius: option.innerRadius + option.radiusStep * (i + 1),
-                        duration: 400,
-                        easing: 'backOut'
-                    }, function() {
-                        console.log("From Provided Callback!");
-                    });
 
             } else {
                 // Clockwise animation
@@ -291,48 +288,66 @@
                         // Sync animations
                         nuwe_charts.animation.nextAnimation(2, 'after');
 
-                        nuwe_charts.svgElements._theArc[0].animate(nuwe_charts.svgElements._anim[2][0]).animate(nuwe_charts.svgElements._anim[3][0].delay(400));
-                        nuwe_charts.svgElements._theArc[1].animate(nuwe_charts.svgElements._anim[2][1].delay(200)).animate(nuwe_charts.svgElements._anim[3][1].delay(600));
-                        nuwe_charts.svgElements._theArc[2].animate(nuwe_charts.svgElements._anim[2][2].delay(400)).animate(nuwe_charts.svgElements._anim[3][2].delay(800));
                     }
                 );
                 
-                // Enlarge animation
-                nuwe_charts.svgElements._anim[2][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * (i + 1), 1, 0]
-                }, 400, 'backOut');
-
             }
+            
+            // Counter-clockwise animation
+            nuwe_charts.svgElements._anim[2][0][i] = nuwe_charts.animation.createAnimation(
+                "radius",
+                {
+                    radius: option.innerRadius + option.radiusStep * (i + 1),
+                    duration: 400,
+                    easing: 'backOut'
+                }, null);
+            nuwe_charts.svgElements._anim[2][1][i] = nuwe_charts.animation.createAnimation(
+                "radius",
+                {
+                    radius: option.innerRadius + option.radiusStep * i,
+                    duration: 400,
+                    easing: 'backOut'
+                }, null);
+            // Shrink Animation Define
+            nuwe_charts.svgElements._anim[3][0][i] = nuwe_charts.animation.createAnimation(
+                "radius",
+                {
+                    radius: option.innerRadius + option.radiusStep * (i - 1),
+                    duration: 400,
+                    easing: 'bounce'
+                }, null);
+            nuwe_charts.svgElements._anim[3][1][i] = nuwe_charts.animation.createAnimation(
+                "radius",
+                {
+                    radius: option.innerRadius + option.radiusStep * i,
+                    duration: 400,
+                    easing: 'bounce'
+                }, null);
+
+
             if (i === 2) {
                 // Back to origin animation
-                nuwe_charts.svgElements._anim[3][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, 1, 0]
-                }, 500, 'bounce', function() {
+                nuwe_charts.svgElements._anim[2][1][i] = nuwe_charts.animation.createAnimation(
+                "radius",
+                {
+                    radius: option.innerRadius + option.radiusStep * i,
+                    duration: 400,
+                    easing: 'backout'
+                }, function() {
                     opacityRing.animate(opacityAnim.delay(300));
                 });
 
                 // Final Loading animation
-                nuwe_charts.svgElements._anim[5][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, 1, 0]
-                }, 400, 'bounce', function() {
+                nuwe_charts.svgElements._anim[3][1][i] = nuwe_charts.animation.createAnimation(
+                "radius",
+                {
+                    radius: option.innerRadius + option.radiusStep * i,
+                    duration: 400,
+                    easing: 'bounce'
+                }, function() {
                     animating = false;
                 });
-
-            } else {
-                // Back to origin animation
-                nuwe_charts.svgElements._anim[3][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000 , 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, 1, 0]
-                }, 500, 'backIn');
-                nuwe_charts.svgElements._anim[5][i] = Raphael.animation({
-                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, 1, 0]
-                }, 400, 'bounce');
             }
-
-            // Shrink Animation Define
-            nuwe_charts.svgElements._anim[4][i] = Raphael.animation({
-                arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * (i - 1), 1, 0]
-            }, 400, 'bounce');
-
 
         }
 
@@ -360,10 +375,8 @@
             opacityRing.attr({'arc': [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, 0, 1, 0]});
             n++;
             if (n > 4) {
-                nuwe_charts.svgElements._innerCircle.animate(nuwe_charts.svgElements._innerCircleAnim[0]).animate(nuwe_charts.svgElements._innerCircleAnim[1].delay(900));
-                nuwe_charts.svgElements._theArc[0].animate(nuwe_charts.svgElements._anim[4][0].delay(300)).animate(nuwe_charts.svgElements._anim[5][0].delay(900));
-                nuwe_charts.svgElements._theArc[1].animate(nuwe_charts.svgElements._anim[4][1].delay(500)).animate(nuwe_charts.svgElements._anim[5][1].delay(1100));
-                nuwe_charts.svgElements._theArc[2].animate(nuwe_charts.svgElements._anim[4][2].delay(700)).animate(nuwe_charts.svgElements._anim[5][2].delay(1300));
+                nuwe_charts.svgElements._innerCircle.animate(nuwe_charts.svgElements._innerCircleAnim[0]).animate(nuwe_charts.svgElements._innerCircleAnim[1].delay(1000));
+                nuwe_charts.animation.nextAnimation(3, 'after', 300);
             } else {
                 opacityRing.animate(opacityAnim.delay(200));
             }
