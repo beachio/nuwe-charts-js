@@ -31,15 +31,14 @@
             }
             // second argument option
             if (args.length > 1) {
-                var option = args[1];
-                // overwrite default nuwe_charts options
-                for (var propertyName in option) {
-                    nuwe_charts.option[propertyName] = option[propertyName];
-                }
+                nuwe_charts.prepareOption(args[1]);
+                
             }
             nuwe_charts.init();
             nuwe_charts.drawMainElements();
-            nuwe_charts.loadingDial();
+            // nuwe_charts.loadingDial();
+            nuwe_charts.animateWithValues();
+
         }
     }
 
@@ -60,8 +59,14 @@
 
         backCircleStrokeColor: '#eeeeee',
 
+
+        // TODO: 
+
         // Data Value
         amount: [],
+
+        dataDefaultValue: 500,
+        dataDefaultMax: 1000,
         textPS: [
             {
                 size: 48,
@@ -79,17 +84,36 @@
         syncAnimationDelay:  400,
 
     }
-        /* Private variables */
+    
+    /* Private variables */
     nuwe_charts.svgElements = {
         _innerCircle: {},
         _backCircle: [], 
         _theArc: [], 
         _theInnerArc: [],
         _innerCircleAnim: [],
-        _anim: []
+        _anim: [],
+        _valueAnim: []
     };
 
-    
+    // 
+    nuwe_charts.prepareOption = function(option) {
+        if (option == null) option = {};
+        var margin = 50;
+        option.width = option.width || parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).width, 10);
+        option.height = option.height || parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).height, 10);
+
+        axis =  Math.min(option.width, option.height);
+
+        option.innerRadius = axis / 5 - nuwe_charts.option.ringCount;
+        option.radiusStep = (axis / 2 - margin - option.innerRadius) / nuwe_charts.option.ringCount;
+        option.strokeWidth = option.radiusStep - 2;
+        // overwrite default nuwe_charts options
+        for (var propertyName in option) {
+            nuwe_charts.option[propertyName] = option[propertyName];
+        }
+        console.log(option);
+    };
     // Init function
     nuwe_charts.init = function() {
         nuwe_charts._paper = Raphael(nuwe_charts.containerID, nuwe_charts.option.width, nuwe_charts.option.height);
@@ -125,17 +149,19 @@
             nuwe_charts.option.width / 2, 
             nuwe_charts.option.height / 2, 
             nuwe_charts.option.innerRadius - nuwe_charts.option.strokeWidth / 2 - 3);
-        nuwe_charts.svgElements._innerCircle.attr('fill', nuwe_charts.option.innerCircleFillColor).attr('stroke', nuwe_charts.option.innerCircleStrokeColor);
+        nuwe_charts.svgElements._innerCircle.attr('fill', nuwe_charts.option.innerCircleFillColor)
+            .attr('stroke', nuwe_charts.option.innerCircleStrokeColor);
 
 
         var i, j;
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < nuwe_charts.option.ringCount; i++) {
             // The Rails
-            nuwe_charts.svgElements._backCircle[i] = nuwe_charts._paper.circle(nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i).attr({
+            nuwe_charts.svgElements._backCircle[i] = nuwe_charts._paper.circle(nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i)
+            .attr({
                 'stroke': nuwe_charts.option.backCircleStrokeColor,
                 'stroke-width': nuwe_charts.option.strokeWidth
             });
-
+            // Main animation arcs
             nuwe_charts.svgElements._theArc[i] = nuwe_charts._paper.path().attr({
                 'stroke': nuwe_charts.option.colorTable[i],
                 'stroke-width': nuwe_charts.option.strokeWidth,
@@ -200,7 +226,6 @@
 
         animations: {
             clockwise: function(params, callback) {
-                console.log(params);
                 return Raphael.animation({
                     arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 0 , 1000, 
                     params.radius, params.direction, 0]
@@ -217,6 +242,13 @@
                     arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000 , 1000, 
                     params.radius, 1, 0]
                 }, params.duration, params.easing, callback);
+            },
+            // For Animate With value animation, we are going to use clockwise transition
+            animateWithValue: function(params, callback) {
+                return Raphael.animation({
+                    arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, params.value, params.maxValue, 
+                    params.radius, 1, 0]
+                }, params.duration, callback);  
             }
         }
 
@@ -390,7 +422,51 @@
         });
 
         nuwe_charts.animation.nextAnimation(0, 'sync');
-    }
+    };
+
+    /* 
+    ** Data Loading Helper function
+    */
+    nuwe_charts.animateWithValues = function () {
+        var option = nuwe_charts.option;
+        for (i = 0; i < option.ringCount; i++) {
+            // First initialize arcs to the initial position.
+            nuwe_charts.svgElements._theArc[i].attr({
+                arc: [option.width / 2, option.height / 2, 0, getDataValue(i).maxValue, option.innerRadius + option.radiusStep * i, 1, 0]
+            });
+
+            nuwe_charts.svgElements._valueAnim[i] = nuwe_charts.animation.createAnimation(
+                "animateWithValue",
+                {
+                    radius: option.innerRadius + option.radiusStep * i,
+                    duration: 900,
+                    value: getDataValue(i).value,
+                    maxValue: getDataValue(i).maxValue
+                }, function() {
+                    console.log("Ended!");
+                });
+        }
+        for (i = 0; i < option.ringCount; i++) {
+            nuwe_charts.svgElements._theArc[i].animateWith(nuwe_charts.svgElements._theArc[(i + 1) % option.ringCount],
+                 nuwe_charts.svgElements._valueAnim[(i + 1) % option.ringCount], 
+                 nuwe_charts.svgElements._valueAnim[i]);
+        }
+
+        // Helper function to prevent no value error.
+        function getDataValue (index) {
+            var defaultValue = {
+                value: option.dataDefaultValue,
+                maxValue: option.dataDefaultMax
+            };
+            
+            if (option.amount[index]) {
+                var record = option.amount[index];
+                return extend(defaultValue, record);
+            } else
+                return defaultValue;
+        }
+    };
+
 
     nuwe_charts.prototype.getPaper = function() {
         return nuwe_charts.paper;

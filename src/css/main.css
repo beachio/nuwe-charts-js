@@ -1,4 +1,17 @@
-#canvas, #demo {
-	width: 420px;
+.block {
 	margin: 100px auto;
+	width: 600px;
+}
+
+pre {
+	background: #f5f5f5;
+	padding: 20px;
+	text-align: left;
+}
+
+#demo1, #demo2{
+	margin: 0 auto;
+}
+#demo1 {
+	width: 420px;
 }

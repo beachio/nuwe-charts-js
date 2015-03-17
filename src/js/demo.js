@@ -1,9 +1,10 @@
 $(document).ready(function() {
 	var width = 420, height = 420;
 	// Call Library function
-	var option = {
+	nuwe_charts('demo1', {
 		width: width,
 		height: height
-	}
-	var nuwe_obj = nuwe_charts('demo', option);
+	});
+	
+	nuwe_charts('demo2', null);
 });

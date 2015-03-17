@@ -29,15 +29,34 @@
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
-    <div id="demo"></div>
+    <div class="block">
+        <h3>Nuwe Chart with width/height specific</h3>
+        <div id="demo1"></div>
+        <pre>
+            <code>
+    nuwe_charts('demo1', {
+        width: 420, 
+        height: 420
+    });
+            </code>
+        </pre>
+    </div>
+    <div class="block">
+        <h3>Nuwe Chart with no dimentions set.</h3>
+        <div id="demo2" style="width: 500px; height: 500px;"></div>
+        <pre>
+            <code>
+    nuwe_charts('demo2');
+            </code>
+        </pre>
+    </div>
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="../lib/jquery/dist/jquery.js"></script>
     <script src="../lib/raphael/raphael.js"></script>
-    <script src="../lib/lodash/dist/lodash.compat.js"></script>
     <script src="src/js/nuwe_charts.js"></script>
     <script src="src/js/demo.js"></script>
-    <script src="src/js/main.js"></script>
+    <!-- <script src="src/js/main.js"></script> -->
     <!-- endbuild -->
 </body>
 </html>
