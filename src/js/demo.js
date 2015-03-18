@@ -7,4 +7,47 @@ $(document).ready(function() {
 	});
 	
 	nuwe_charts('demo2', null);
+
+	nuwe_charts('demo3', 
+		{
+        	amount: [{
+	            value: 930,
+	            maxValue: 1000
+	        },
+	        {
+	            value: 453,
+	            maxValue: 1000
+	        },
+	        {
+	            value: 780,
+	            maxValue: 1000
+	        }]
+	    });
+
+
+	nuwe_charts('demo4', {
+        ringCount: 5,
+        colorTable: ['#009D76', '#ff8300', '#cd3df6', "#FF0000", "#0FAF0F"],
+    	amount: [
+    		{
+	            value: 865,
+	            maxValue: 1000
+	        },
+	        {
+	            value: 930,
+	            maxValue: 1000
+	        },
+    		{
+	            value: 777,
+	            maxValue: 1000
+	        },
+	        {
+	            value: 912,
+	            maxValue: 1000
+	        },
+	        {
+	            value: 780,
+	            maxValue: 1000
+	        }]
+    });
 });

@@ -9,6 +9,18 @@
         array = "array",
         toString = "toString";
 
+    Object.deepExtend = function(destination, source) {
+      for (var property in source) {
+        if (typeof source[property] === "object") {
+          destination[property] = destination[property] || {};
+          arguments.callee(destination[property], source[property]);
+        } else {
+          destination[property] = source[property];
+        }
+      }
+      return destination;
+    };
+
     /* 
     ** nuwe_charts constructor function
     **
@@ -96,24 +108,7 @@
         _valueAnim: []
     };
 
-    // 
-    nuwe_charts.prepareOption = function(option) {
-        if (option == null) option = {};
-        var margin = 50;
-        option.width = option.width || parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).width, 10);
-        option.height = option.height || parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).height, 10);
-
-        axis =  Math.min(option.width, option.height);
-
-        option.innerRadius = axis / 5 - nuwe_charts.option.ringCount;
-        option.radiusStep = (axis / 2 - margin - option.innerRadius) / nuwe_charts.option.ringCount;
-        option.strokeWidth = option.radiusStep - 2;
-        // overwrite default nuwe_charts options
-        for (var propertyName in option) {
-            nuwe_charts.option[propertyName] = option[propertyName];
-        }
-        console.log(option);
-    };
+    
     // Init function
     nuwe_charts.init = function() {
         nuwe_charts._paper = Raphael(nuwe_charts.containerID, nuwe_charts.option.width, nuwe_charts.option.height);
@@ -140,6 +135,22 @@
             };
         };
        
+    };
+
+    // option object manipulation
+    nuwe_charts.prepareOption = function(option) {
+        if (option == null) option = {};
+        var margin = 30;
+        option.width = option.width || parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).width, 10) || nuwe_charts.option.width;
+        option.height = option.height || parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).height, 10) || nuwe_charts.option.height;
+
+        axis =  Math.min(option.width, option.height);
+        ringCount = option.ringCount || nuwe_charts.option.ringCount;
+        option.innerRadius = axis / 5 - ringCount;
+        option.radiusStep = Math.floor((axis / 2 - option.innerRadius) / (ringCount + 1));
+        option.strokeWidth = option.radiusStep - 2;
+        
+        nuwe_charts.option = Object.deepExtend(nuwe_charts.option, option);
     };
 
     /* Raphael Circles Preparation */
@@ -209,6 +220,7 @@
                 var ringCount = nuwe_charts.option.ringCount;
                 for (i = 0; i < nuwe_charts.option.ringCount; i ++) {
                     nuwe_charts.svgElements._theArc[i].animateWith(nuwe_charts.svgElements._theArc[(i + 1) % ringCount], nuwe_charts.svgElements._anim[idx][(i + 1) % ringCount], nuwe_charts.svgElements._anim[idx][i].delay(nuwe_charts.option.syncAnimationDelay));
+//                    nuwe_charts.svgElements._theArc[i].animateWith(rotatingCircle, rotatingAnimation, nuwe_charts.svgElements._anim[idx][i].delay(nuwe_charts.option.syncAnimationDelay));
                 }
                 
             }
@@ -446,6 +458,8 @@
                     console.log("Ended!");
                 });
         }
+
+       
         for (i = 0; i < option.ringCount; i++) {
             nuwe_charts.svgElements._theArc[i].animateWith(nuwe_charts.svgElements._theArc[(i + 1) % option.ringCount],
                  nuwe_charts.svgElements._valueAnim[(i + 1) % option.ringCount], 
@@ -461,7 +475,7 @@
             
             if (option.amount[index]) {
                 var record = option.amount[index];
-                return extend(defaultValue, record);
+                return Object.deepExtend(defaultValue, record);
             } else
                 return defaultValue;
         }
