@@ -35,7 +35,6 @@
             console.log(first);
             // return nuwe_charts._engine.create[apply](nuwe_charts, first.splice(0, 3 + nuwe_charts.is(first[0], nu))).add(first);
         } else {
-            console.log(first);
             var args = Array.prototype.slice.call(arguments, 0);
             // the first argument is the container id 
             if (args.length > 0) {
@@ -176,6 +175,7 @@
             nuwe_charts.svgElements._theArc[i] = nuwe_charts._paper.path().attr({
                 'stroke': nuwe_charts.option.colorTable[i],
                 'stroke-width': nuwe_charts.option.strokeWidth,
+                'stroke-linecap': 'round',
                 arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, (i % 2 *2 - 1), 0]
             }); 
 
@@ -220,7 +220,6 @@
                 var ringCount = nuwe_charts.option.ringCount;
                 for (i = 0; i < nuwe_charts.option.ringCount; i ++) {
                     nuwe_charts.svgElements._theArc[i].animateWith(nuwe_charts.svgElements._theArc[(i + 1) % ringCount], nuwe_charts.svgElements._anim[idx][(i + 1) % ringCount], nuwe_charts.svgElements._anim[idx][i].delay(nuwe_charts.option.syncAnimationDelay));
-//                    nuwe_charts.svgElements._theArc[i].animateWith(rotatingCircle, rotatingAnimation, nuwe_charts.svgElements._anim[idx][i].delay(nuwe_charts.option.syncAnimationDelay));
                 }
                 
             }
