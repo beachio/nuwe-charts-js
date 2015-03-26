@@ -9,3 +9,5 @@ In the below instruction, we assume that you have node/npm installed
 
 Use 'grunt serve' to launch the application. You are free to change the port number, but for your information, the default port number is 8080
 You can access it on http://localhost:8080
+
+Navigate to /src to see the examples
