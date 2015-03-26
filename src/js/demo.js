@@ -10,6 +10,7 @@ $(document).ready(function() {
 
 	nuwe_charts('demo3', 
 		{
+			score: 721,
         	amount: [{
 	            value: 930,
 	            maxValue: 1000
@@ -28,6 +29,8 @@ $(document).ready(function() {
 	nuwe_charts('demo4', {
         ringCount: 5,
         colorTable: ['#009D76', '#ff8300', '#cd3df6', "#FF0000", "#0FAF0F"],
+        score: 85,
+        maxValue: 100,
     	amount: [
     		{
 	            value: 865,

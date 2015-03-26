@@ -65,8 +65,8 @@
     
 
         /* Color Variables */
-        innerCircleFillColor: '#00b1e8',
-        innerCircleStrokeColor: '#00b1e8',
+        innerCircleFillColor: '#0055e8',
+        innerCircleStrokeColor: '#0055e8',
 
         backCircleStrokeColor: '#eeeeee',
 
@@ -75,6 +75,8 @@
 
         // Data Value
         amount: [],
+        score: 500,
+        maxValue: 1000,
 
         dataDefaultValue: 500,
         dataDefaultMax: 1000,
@@ -84,8 +86,8 @@
                 top: 0
             },
             {
-                size: 32,
-                top: 45
+                size: 20,
+                top: 40
             }
         ],
         colorTable: ['#009D76', '#ff8300', '#cd3df6'],
@@ -104,7 +106,9 @@
         _theInnerArc: [],
         _innerCircleAnim: [],
         _anim: [],
-        _valueAnim: []
+        _valueAnim: [],
+        _scoreText: [],
+        _optionalText: null
     };
 
     
@@ -178,8 +182,28 @@
                 'stroke-linecap': 'round',
                 arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, (i % 2 *2 - 1), 0]
             }); 
-
         }
+
+        // And the text
+        nuwe_charts.svgElements._scoreText[0] = nuwe_charts._paper.text(
+            nuwe_charts.option.width / 2, 
+            nuwe_charts.option.height / 2 - nuwe_charts.option.textPS[0].top,
+            nuwe_charts.option.score
+        ).attr({
+            'font-size': nuwe_charts.option.textPS[0].size,
+            'fill': '#FFFFFF',
+            'anchor': 'center'
+        });
+
+        nuwe_charts.svgElements._scoreText[1] = nuwe_charts._paper.text(
+            nuwe_charts.option.width / 2, 
+            nuwe_charts.option.height / 2 + nuwe_charts.option.textPS[1].top,
+            "/ " + nuwe_charts.option.maxValue
+        ).attr({
+            'font-size': nuwe_charts.option.textPS[1].size,
+            'fill': '#FFFFFF',
+            'anchor': 'center'
+        });
     };
 
     nuwe_charts.animation = {
