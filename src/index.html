@@ -29,6 +29,10 @@
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
+    <div id="urp">
+  </div>
+  
+    
     <div class="block">
         <h3>Nuwe Chart with width/height specific</h3>
         <div id="demo1"></div>
@@ -79,11 +83,37 @@
     </div>
 
     <div class="block">
-        <h3>Nuwe Chart with several rings</h3>
+        <h3>Nuwe Chart with custom data.</h3>
         <div id="demo4" style="width: 500px; height: 500px;"></div>
         <pre>
             <code>
-    nuwe_charts('demo4', {
+    nuwe_charts('demo3', 
+    {
+        amount:[
+            {
+                value: 930,
+                maxValue: 1000
+            },
+            {
+                value: 453,
+                maxValue: 1000
+            },
+            {
+                value: 780,
+                maxValue: 1000
+            }
+        ]
+    });
+            </code>
+        </pre>
+    </div>
+
+    <div class="block">
+        <h3>Nuwe Chart with several rings</h3>
+        <div id="demo5" style="width: 500px; height: 500px;"></div>
+        <pre>
+            <code>
+    nuwe_charts('demo5', {
         ringCount: 5
         colorTable: ['#009D76', '#ff8300', '#cd3df6', "#FF0000", "#0FAF0F"]
         amount: [

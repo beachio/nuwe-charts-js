@@ -25,8 +25,26 @@ $(document).ready(function() {
 	        }]
 	    });
 
+	nuwe_charts('demo4', 
+		{
+			score: 721,
+        	amount: [{
+	            value: 930,
+	            maxValue: 1000
+	        },
+	        {
+	            value: 453,
+	            maxValue: 1000
+	        },
+	        {
+	            value: 780,
+	            maxValue: 1000
+	        }]
+	    });
 
-	nuwe_charts('demo4', {
+
+
+	nuwe_charts('demo5', {
         ringCount: 5,
         colorTable: ['#009D76', '#ff8300', '#cd3df6', "#FF0000", "#0FAF0F"],
         score: 85,
@@ -53,4 +71,5 @@ $(document).ready(function() {
 	            maxValue: 1000
 	        }]
     });
+
 });

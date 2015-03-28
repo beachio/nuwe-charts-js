@@ -40,12 +40,14 @@
             if (args.length > 0) {
                 nuwe_charts.containerID = args[0];
             }
+
+            var callback = null;
             // second argument option
             if (args.length > 1) {
                 nuwe_charts.prepareOption(args[1]);
-                
+                callback = args[2];
             }
-            nuwe_charts.init();
+            nuwe_charts.init(callback);
             nuwe_charts.drawMainElements();
             // nuwe_charts.loadingDial();
             nuwe_charts.animateWithValues();
@@ -96,6 +98,8 @@
         ringCount: 3,
         syncAnimationDelay:  400,
 
+        callback: null
+
     }
     
     /* Private variables */
@@ -108,12 +112,18 @@
         _anim: [],
         _valueAnim: [],
         _scoreText: [],
-        _optionalText: null
+        _optionalText: null,
+
+        _basePath: null,
     };
 
     
-    // Init function
-    nuwe_charts.init = function() {
+    /*
+     * Init function
+     * - Prepare Raphael paper element
+     * - Define 
+     */
+    nuwe_charts.init = function(callback) {
         nuwe_charts._paper = Raphael(nuwe_charts.containerID, nuwe_charts.option.width, nuwe_charts.option.height);
 
         nuwe_charts._paper.customAttributes.arc = function(xloc, yloc, value, total, R, direction, offset) {
@@ -182,6 +192,7 @@
                 'stroke-linecap': 'round',
                 arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, (i % 2 *2 - 1), 0]
             }); 
+            nuwe_charts.applyLabelToArc(nuwe_charts.option.width / 2, nuwe_charts.option.height / 2,  nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, "message");
         }
 
         // And the text
@@ -204,6 +215,8 @@
             'fill': '#FFFFFF',
             'anchor': 'center'
         });
+
+
     };
 
     nuwe_charts.animation = {
@@ -478,7 +491,7 @@
                     value: getDataValue(i).value,
                     maxValue: getDataValue(i).maxValue
                 }, function() {
-                    console.log("Ended!");
+                    console.log("Ended!", i);
                 });
         }
 
@@ -504,6 +517,83 @@
         }
     };
 
+
+    nuwe_charts.applyLabelToArc = function(x, y, r, message) {
+        var textFill = "#4A5256";
+        var darkBlueFill = "#094973";
+        var path11 = nuwe_charts._paper.path(getCircletoPath(x, y, r)).attr({stroke:""});
+        textOnPath(message, path11, 15, 1.5, 3, 3, 0, darkBlueFill, "bold");
+
+        /* Helpers for drawing rounded arcs*/
+        function getCircletoPath(x, y, r) { // x and y are center and r is the radius
+       
+           var s = "M";
+           s = s + "" + (x-r) + "," + (y) + "A"+r+","+r+",0,1,1,"+(x+r)+","+(y)+"z";
+       
+           return s;
+        }
+
+        function textOnPath(message, path, fontSize, letterSpacing, kerning, geckoKerning, angle, fontColor, fontWeight) {
+          
+            var gecko = /rv:([^\)]+)\) Gecko\/\d{8}/.test(navigator.userAgent||'') ? true : false;
+            var letters = [], places = [], messageLength = 0;
+          
+            for (var c=0; c < message.length; c++) {
+              
+              var letter = nuwe_charts._paper.text(0, 0, message[c]).attr({"text-anchor" : "middle", "fill" : fontColor, "font-weight" : fontWeight});      
+                var character = letter.attr('text'), kern = 0;        
+                letters.push(letter);
+
+                if (kerning) {
+                  
+                    if(gecko && geckoKerning) {
+                        kerning = geckoKerning;
+                    }
+                  
+                    var predecessor = letters[c-1] ? letters[c-1].attr('text') : '';
+                  
+                    if (kerning[c]) {
+                      
+                        kern = kerning[c];
+                      
+                    } else if (kerning[character]) {
+                      
+                        if( typeof kerning[character] === 'object' ) {
+                            kern = kerning[character][predecessor] || kerning[character]['default'] || 0;
+                        } else {
+                            kern = kerning[character];
+                        }
+                    }
+                  
+                    if(kerning['default'] ) {
+                        kern = kern + (kerning['default'][predecessor] || 0);
+                    }            
+                }
+
+                messageLength += kern;
+                places.push(messageLength);
+                //spaces get a width of 0, so set min at 4px
+                messageLength += Math.max(4.5, letter.getBBox().width);
+            }
+
+            if( letterSpacing ){
+                if (gecko) {
+                    letterSpacing = letterSpacing * 0.83;
+                }
+            } else {
+                letterSpacing = letterSpacing || path.getTotalLength() /  messageLength;
+            }
+            fontSize = fontSize || 10 * letterSpacing;
+              
+            for (c = 0; c < letters.length; c++) {
+                letters[c].attr("font-size", fontSize + "px");
+                p = path.getPointAtLength(places[c] * letterSpacing + r * 1.75);
+                var transformAngle = p.alpha + angle;
+                var rotate = 'R' + (transformAngle < 180 ? transformAngle + 180 : transformAngle > 360 ? transformAngle - 360 : transformAngle )+','+p.x+','+p.y;
+                letters[c].attr({ x: p.x, y: p.y, transform: rotate });
+            }
+        }
+    }
 
     nuwe_charts.prototype.getPaper = function() {
         return nuwe_charts.paper;
