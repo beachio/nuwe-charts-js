@@ -9,6 +9,17 @@ pre {
 	text-align: left;
 }
 
+h3 {
+	font: 100 36px/40px "Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+	color: #37a9f8;
+	padding: 20px 30px;
+	border-bottom: 1px solid #d9d9d9;
+        display: inline-block;
+	letter-spacing: .05em;
+	margin-bottom: 40px;
+	padding-bottom: 40px;
+}
+
 #demo1, #demo2{
 	margin: 0 auto;
 }

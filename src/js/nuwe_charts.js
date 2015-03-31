@@ -494,9 +494,9 @@
 
     nuwe_charts.applyLabelToArc = function(x, y, r, message) {
         var textFill = "#4A5256";
-        var darkBlueFill = "#094973";
+        var darkBlueFill = "#ffffff";
         var path11 = nuwe_charts._paper.path(getCircletoPath(x, y, r)).attr({stroke:""});
-        textOnPath(message, path11, 15, 1.5, 3, 3, 0, darkBlueFill, "bold");
+        textOnPath(message, path11, 15, 1.5, 3, 3, 0, darkBlueFill, "light");
 
         /* Helpers for drawing rounded arcs*/
         function getCircletoPath(x, y, r) { // x and y are center and r is the radius
