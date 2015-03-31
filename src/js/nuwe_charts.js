@@ -57,31 +57,7 @@
 
     nuwe_charts.version = version;
     nuwe_charts.option = {
-        width: 420,
-        height: 420,
-        innerRadius: 81,
-        radiusStep: 31,
-        strokeWidth: 29,
-        imageWidth: 33,
-        imageHeight: 19,
-    
-
-        /* Color Variables */
-        innerCircleFillColor: '#0055e8',
-        innerCircleStrokeColor: '#0055e8',
-
         backCircleStrokeColor: '#eeeeee',
-
-
-        // TODO: 
-
-        // Data Value
-        amount: [],
-        score: 500,
-        maxValue: 1000,
-
-        dataDefaultValue: 500,
-        dataDefaultMax: 1000,
         textPS: [
             {
                 size: 48,
@@ -92,15 +68,8 @@
                 top: 40
             }
         ],
-        colorTable: ['#009D76', '#ff8300', '#cd3df6'],
-
-        // Element and Animation Options
-        ringCount: 3,
-        syncAnimationDelay:  400,
-
-        callback: null
-
-    }
+        syncAnimationDelay:  400
+    };
     
     /* Private variables */
     nuwe_charts.svgElements = {
@@ -154,13 +123,13 @@
     nuwe_charts.prepareOption = function(option) {
         if (option == null) option = {};
         var margin = 30;
-        option.width = option.width || parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).width, 10) || nuwe_charts.option.width;
-        option.height = option.height || parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).height, 10) || nuwe_charts.option.height;
+        option.width = parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).width, 10) || nuwe_charts.option.width;
+        option.height = parseInt(getComputedStyle(document.getElementById(nuwe_charts.containerID)).height, 10) || nuwe_charts.option.height;
 
         axis =  Math.min(option.width, option.height);
-        ringCount = option.ringCount || nuwe_charts.option.ringCount;
-        option.innerRadius = axis / 5 - ringCount;
-        option.radiusStep = Math.floor((axis / 2 - option.innerRadius) / (ringCount + 1));
+        option.ringCount = option.data.length - 1;
+        option.innerRadius = axis / 5 - option.ringCount;
+        option.radiusStep = Math.floor((axis / 2 - option.innerRadius) / (option.ringCount + 1));
         option.strokeWidth = option.radiusStep - 2;
         
         nuwe_charts.option = Object.deepExtend(nuwe_charts.option, option);
@@ -173,10 +142,10 @@
             nuwe_charts.option.width / 2, 
             nuwe_charts.option.height / 2, 
             nuwe_charts.option.innerRadius - nuwe_charts.option.strokeWidth / 2 - 3);
-        nuwe_charts.svgElements._innerCircle.attr('fill', nuwe_charts.option.innerCircleFillColor)
-            .attr('stroke', nuwe_charts.option.innerCircleStrokeColor);
+        nuwe_charts.svgElements._innerCircle.attr('fill', nuwe_charts.option.data[0].color)
+            .attr('stroke', nuwe_charts.option.data[0].color);
 
-
+        // The main elements
         var i, j;
         for (i = 0; i < nuwe_charts.option.ringCount; i++) {
             // The Rails
@@ -187,19 +156,19 @@
             });
             // Main animation arcs
             nuwe_charts.svgElements._theArc[i] = nuwe_charts._paper.path().attr({
-                'stroke': nuwe_charts.option.colorTable[i],
+                'stroke': nuwe_charts.option.data[i + 1].color,
                 'stroke-width': nuwe_charts.option.strokeWidth,
                 'stroke-linecap': 'round',
                 arc: [nuwe_charts.option.width / 2, nuwe_charts.option.height / 2, 1000, 1000, nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, (i % 2 *2 - 1), 0]
             }); 
-            nuwe_charts.applyLabelToArc(nuwe_charts.option.width / 2, nuwe_charts.option.height / 2,  nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, "message");
+            nuwe_charts.applyLabelToArc(nuwe_charts.option.width / 2, nuwe_charts.option.height / 2,  nuwe_charts.option.innerRadius + nuwe_charts.option.radiusStep * i, nuwe_charts.option.data[i + 1].textLabel);
         }
 
         // And the text
         nuwe_charts.svgElements._scoreText[0] = nuwe_charts._paper.text(
             nuwe_charts.option.width / 2, 
             nuwe_charts.option.height / 2 - nuwe_charts.option.textPS[0].top,
-            nuwe_charts.option.score
+            nuwe_charts.option.data[0].amount
         ).attr({
             'font-size': nuwe_charts.option.textPS[0].size,
             'fill': '#FFFFFF',
@@ -209,7 +178,7 @@
         nuwe_charts.svgElements._scoreText[1] = nuwe_charts._paper.text(
             nuwe_charts.option.width / 2, 
             nuwe_charts.option.height / 2 + nuwe_charts.option.textPS[1].top,
-            "/ " + nuwe_charts.option.maxValue
+            "/ " + nuwe_charts.option.data[0].maxValue
         ).attr({
             'font-size': nuwe_charts.option.textPS[1].size,
             'fill': '#FFFFFF',
@@ -504,7 +473,11 @@
 
         // Helper function to prevent no value error.
         function getDataValue (index) {
-            var defaultValue = {
+            return {
+                value: option.data[index].amount,
+                maxValue: option.data[index].maxValue
+            };
+            /* var defaultValue = {
                 value: option.dataDefaultValue,
                 maxValue: option.dataDefaultMax
             };
@@ -514,6 +487,7 @@
                 return Object.deepExtend(defaultValue, record);
             } else
                 return defaultValue;
+            */
         }
     };
 

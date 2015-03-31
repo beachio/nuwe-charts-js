@@ -34,47 +34,40 @@
   
     
     <div class="block">
-        <h3>Nuwe Chart with width/height specific</h3>
-        <div id="demo1"></div>
+        <h3>Nuwe Chart the full data format</h3>
+        <div id="demo1" style="width: 500px; height: 500px;"></div>
         <pre>
             <code>
-    nuwe_charts('demo1', {
-        width: 420, 
-        height: 420
-    });
-            </code>
-        </pre>
-    </div>
-
-    <div class="block">
-        <h3>Nuwe Chart with no dimentions set.</h3>
-        <div id="demo2" style="width: 500px; height: 500px;"></div>
-        <pre>
-            <code>
-    nuwe_charts('demo2');
-            </code>
-        </pre>
-    </div>
-
-    <div class="block">
-        <h3>Nuwe Chart with custom data.</h3>
-        <div id="demo3" style="width: 500px; height: 500px;"></div>
-        <pre>
-            <code>
-    nuwe_charts('demo3', 
+    nuwe_charts('demo1', 
     {
-        amount:[
+        'data': [
             {
-                value: 930,
-                maxValue: 1000
+                "color": "#0055e8",
+                "amount": 721,
+                "maxValue": 1000,
+                "textLabel": "Nutrition",
+                "textLabelColor": "#ffffff"
             },
             {
-                value: 453,
-                maxValue: 1000
+                "color": "#009D76",
+                "amount": 930,
+                "maxValue": 1000,
+                "textLabel": "Nutrition",
+                "textLabelColor": "#ffffff"
             },
             {
-                value: 780,
-                maxValue: 1000
+                "color": "#ff8300",
+                "amount": 453,
+                "maxValue": 1000,
+                "textLabel": "Nutrition",
+                "textLabelColor": "#ffffff"
+            },
+            {
+                "color": "#cd3df6",
+                "amount": 780,
+                "maxValue": 1000,
+                "textLabel": "Nutrition",
+                "textLabelColor": "#ffffff"
             }
         ]
     });
@@ -82,66 +75,6 @@
         </pre>
     </div>
 
-    <div class="block">
-        <h3>Nuwe Chart with custom data.</h3>
-        <div id="demo4" style="width: 500px; height: 500px;"></div>
-        <pre>
-            <code>
-    nuwe_charts('demo3', 
-    {
-        amount:[
-            {
-                value: 930,
-                maxValue: 1000
-            },
-            {
-                value: 453,
-                maxValue: 1000
-            },
-            {
-                value: 780,
-                maxValue: 1000
-            }
-        ]
-    });
-            </code>
-        </pre>
-    </div>
-
-    <div class="block">
-        <h3>Nuwe Chart with several rings</h3>
-        <div id="demo5" style="width: 500px; height: 500px;"></div>
-        <pre>
-            <code>
-    nuwe_charts('demo5', {
-        ringCount: 5
-        colorTable: ['#009D76', '#ff8300', '#cd3df6', "#FF0000", "#0FAF0F"]
-        amount: [
-            {
-                value: 865,
-                maxValue: 1000
-            },
-            {
-                value: 930,
-                maxValue: 1000
-            },
-            {
-                value: 777,
-                maxValue: 1000
-            },
-            {
-                value: 912,
-                maxValue: 1000
-            },
-            {
-                value: 780,
-                maxValue: 1000
-            }
-        ]
-    });
-            </code>
-        </pre>
-    </div>
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="../lib/jquery/dist/jquery.js"></script>
