@@ -1,4 +1,6 @@
-- Collaboration
+DEMO: http://development.nuwe-charts-js.divshot.io/
+
+
 
 To run the application, we encourage you to run it with Grunt.
 
