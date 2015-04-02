@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	{
 		'data': [
 			{
-		    	"color": "#0000FF",
+		    	"color": "#00b7ff",
 		    	"amount": 721,
 		    	"maxValue": 1000,
 		    	"textLabel": "Overall",
@@ -40,42 +40,42 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	{
 		'data': [
 			{
-		    	"color": "#0000FF",
+		    	"color": "#00b7ff",
 		    	"amount": 721,
 		    	"maxValue": 1000,
-		    	"textLabel": "Overall",
+		    	"textLabel": "Health",
 		    	"textLabelColor": "#ffffff"
 			},
 			{
 		    	"color": "#009D76",
 		    	"amount": 930,
 		    	"maxValue": 1000,
-		    	"textLabel": "Food",
+		    	"textLabel": "Fitness",
 		    	"textLabelColor": "#ffffff"
 			},
 			{
 		    	"color": "#ff8300",
 		    	"amount": 453,
 		    	"maxValue": 1000,
-		    	"textLabel": "Nutrition",
+		    	"textLabel": "Lifestyle",
 		    	"textLabelColor": "#ffffff"
 			},
 			{
 		    	"color": "#cd3df6",
 		    	"amount": 780,
 		    	"maxValue": 1000,
-		    	"textLabel": "Exercise",
+		    	"textLabel": "Family",
 		    	"textLabelColor": "#ffffff"
 			},
 			{
-		    	"color": "#cd3df6",
+		    	"color": "#FF0000",
 		    	"amount": 850,
 		    	"maxValue": 1000,
-		    	"textLabel": "Exercise",
+		    	"textLabel": "Food",
 		    	"textLabelColor": "#ffffff"
 			},
 			{
-		    	"color": "#cd3df6",
+		    	"color": "#0FAF0F",
 		    	"amount": 900,
 		    	"maxValue": 1000,
 		    	"textLabel": "Exercise",
