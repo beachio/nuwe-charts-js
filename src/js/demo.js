@@ -1,5 +1,5 @@
-$(document).ready(function() {
-
+document.addEventListener("DOMContentLoaded", function(event) { 
+	// Sample Animation
 	nuwe_charts('demo1', 
 	{
 		'data': [
@@ -7,14 +7,14 @@ $(document).ready(function() {
 		    	"color": "#0055e8",
 		    	"amount": 721,
 		    	"maxValue": 1000,
-		    	"textLabel": "Nutrition",
+		    	"textLabel": "Overall",
 		    	"textLabelColor": "#ffffff"
 			},
 			{
 		    	"color": "#009D76",
 		    	"amount": 930,
 		    	"maxValue": 1000,
-		    	"textLabel": "Nutrition",
+		    	"textLabel": "Food",
 		    	"textLabelColor": "#ffffff"
 			},
 			{
@@ -28,7 +28,7 @@ $(document).ready(function() {
 		    	"color": "#cd3df6",
 		    	"amount": 780,
 		    	"maxValue": 1000,
-		    	"textLabel": "Nutrition",
+		    	"textLabel": "Exercise",
 		    	"textLabelColor": "#ffffff"
 			}
 		]
