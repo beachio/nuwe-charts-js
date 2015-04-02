@@ -17,6 +17,6 @@ module.exports = function(grunt){
       },
     },
   });
-  grunt.registerTask('serve', ['connect:server']);
+  grunt.registerTask('default', ['connect:server']);
 
 };
